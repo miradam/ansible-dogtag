@@ -1,0 +1,68 @@
+---
+
+# - debug: var=hostvars[inventory_hostname] verbosity=4
+# - debug: var=groups verbosity=4
+
+# DNS / hosts
+- name: fix /etc/hosts
+  tags:
+    - common
+  template: src=etc_hosts dest=/etc/hosts
+
+- name: Set FQDN hostname
+  tags:
+    - common
+  hostname: name={{ ansible_fqdn }}
+
+# time zones
+- name: Get timedatectl information
+  tags:
+    - common
+  command: timedatectl
+  register: timedatectl
+  changed_when: false
+
+- name: Set timezone to UTC
+  tags:
+    - common
+  command: timedatectl set-timezone UTC
+  when: "'Time zone: UTC' not in timedatectl.stdout"
+
+- name: upgrade all packages
+  tags:
+    - common
+    - package-install
+    - package-upgrade
+    - network
+  package: name=* state=latest
+  when: package_upgrade and package_install
+
+- name: Install rsync
+  tags:
+    - common
+    - package-install
+    - network
+  package: name=rsync state=present
+  when: package_install
+
+- name: Install rng tools
+  tags:
+    - common
+    - package-install
+    - network
+  package: name=rng-tools state=present
+  when: package_install
+
+- name: Start the rngd service
+  tags:
+    - common
+  # rng-tools.service is a Systemd name of rngd service
+  service: name=rng-tools.service enabled=yes state=started
+
+- name: tty-less sudo
+  tags:
+    - common
+  lineinfile: dest=/etc/sudoers
+              state=absent
+              regexp='^Defaults(\s+)requiretty(\s*)$'
+              validate='visudo -cf %s'

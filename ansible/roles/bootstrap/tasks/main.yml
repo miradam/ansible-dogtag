@@ -1,0 +1,41 @@
+---
+- name: Check nameserver in /etc/resolv.conf
+  tags:
+    - bootstrap
+  raw: egrep -q ^nameserver /etc/resolv.conf
+  failed_when: false
+  register: has_nameserver
+
+- name: Install python2 and deps for ansible modules
+  tags:
+    - package-install
+    - network
+    - bootstrap
+  #raw: "dnf install -y python2.7 python-selinux"
+  # package: name=python2.7 python-selinux
+  package: name={{item}} state=installed
+  with_items:
+    - python2.7
+    - python-selinux
+  # args:
+  #  creates: /usr/bin/python2
+  register: result
+  # ignore disabled repos
+  # failed_when: "result.rc != 0 and 'Error: There are no enabled repos.' not in result.stdout_lines"
+  # when: which_dnf.rc == 0  and package_install
+
+- name: Gather facts
+  tags:
+    - bootstrap
+  setup:
+
+- name: Dummy (for ansible.skip_tags)
+  tags:
+    - dummy
+  raw: "true"
+  changed_when: false
+
+- name: Display all variables/facts known for a host
+  debug:
+    var: hostvars[inventory_hostname]
+    # verbosity: 4

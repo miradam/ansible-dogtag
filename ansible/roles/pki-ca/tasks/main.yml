@@ -1,0 +1,23 @@
+---
+- name: install pki-ca package
+  tags:
+    - pkica
+    - package-install
+    - network
+  package: name=pki-ca state=present
+  when: package_install
+
+- name: Write CA config template
+  tags:
+    - pkica
+  template: src=../../pki/templates/pki.cfg dest=/tmp/{{pki_instance_name}}-pkica.cfg
+
+- name: create CA
+  tags:
+    - pkica
+  command: pkispawn -f /tmp/{{pki_instance_name}}-pkica.cfg -s CA
+  args:
+    creates: /etc/pki/{{pki_instance_name}}/ca/CS.cfg
+
+- include: ../../pki/tasks/limitmemory.yml
+- include: ../../pki/tasks/fetchadmincert.yml

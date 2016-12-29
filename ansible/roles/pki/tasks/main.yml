@@ -1,0 +1,13 @@
+---
+- name: install pki-server packages and dependencies
+  tags:
+    - pki
+    - package-install
+    - network
+  package: name={{ item }} state=present
+  with_items:
+    - pki-server
+    - dogtag-pki-server-theme
+    - openssl
+  when: package_install
+
