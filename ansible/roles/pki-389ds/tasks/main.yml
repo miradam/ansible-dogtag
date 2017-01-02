@@ -1,23 +1,37 @@
 ---
-- name: install 389-DS LDAP server
+- name: install 389-ds LDAP server
   tags:
     - 389ds
     - package-install
-    - network
-  package: name=389-ds-base state=present
+  # package: name=389-ds-base state=present
+  package: name={{item}} state=present
+  with_items:
+    - 389-ds-base
+    - 389-admin
 
-- name: create 389-DS instance
-  tags:
-    - 389ds
-  command: setup-ds \
-    --silent \
-    General.FullMachineName='{{ ansible_fqdn }}' \
-    General.SuiteSpotUserID=nobody \
-    General.SuiteSpotGroup=nogroup \
-    slapd.ServerPort={{ldap_port}} \
-    slapd.ServerIdentifier='{{pki_instance_name}}' \
-    slapd.Suffix='{{suffix}}' \
-    slapd.RootDN='cn=Directory Manager' \
-    slapd.RootDNPwd='{{ dm_password }}'
-  args:
-    creates: /etc/dirsrv/slapd-{{pki_instance_name}}
+- name: configure file descriptors for dirsrv systemd service
+  lineinfile:
+    dest=/etc/default/dirsrv.systemd
+    state=present
+    insertafter="^[Service]"
+    line=LimitNOFILE=8192
+
+# - name: create 389-ds instance for PKI
+#  tags:
+#    - 389ds
+#  command: setup-ds \
+#    --silent \
+#    General.FullMachineName='{{ ansible_fqdn }}' \
+#    General.SuiteSpotUserID=nobody \
+#    General.SuiteSpotGroup=nogroup \
+#    slapd.ServerPort={{ldap_port}} \
+#    slapd.ServerIdentifier='{{pki_instance_name}}' \
+#    slapd.Suffix='{{suffix}}' \
+#    slapd.RootDN='cn=Directory Manager' \
+#    slapd.RootDNPwd='{{ dm_password }}'
+#  args:
+#    creates: /etc/dirsrv/slapd-{{pki_instance_name}}
+
+- include: config389ds.yml
+  when: not ds389_skip_config
+

@@ -1,3 +1,5 @@
 ---
 dependencies:
-  - pki
+#  - pki
+  - common
+  - pki-389ds

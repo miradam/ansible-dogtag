@@ -1,6 +1,23 @@
 ---
+# Configuration type
+# if it is set - preparation and 389-ds configuration activities will be skipped (usually to add a new replication agreement)
+# skip_config: false
+
+default_password: secret123
+
+# General 389-ds settings
+389ds_password: "{{ default_password }}"
+389ds_suffix: dc=example,dc=com
+389ds_rootdn: cn=root
+389ds_serverid: ldapsrv
+
+# Admin server settings
+389ds_admin_password: "{{ default_password }}"
+389ds_admin_domain: example.com
+
+
 suffix: dc=example,dc=org
-ldap_port: 9389
+ds_ldap_port: 9389
 http_port: 9080
 https_port: 9443
 pki_instance_name: pki-tomcat

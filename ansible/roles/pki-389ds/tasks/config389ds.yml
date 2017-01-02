@@ -1,0 +1,14 @@
+---
+- block:
+   - name: Check that 389-ds LDAP server is already installed and enabled
+     command: systemctl is-enabled dirsrv@{{ pki_instance_name }}
+     register: results_raw
+     changed_when: false
+
+  rescue:
+   - name: Copy installation template
+     template: src=templates/ldap.inf.j2 dest=/etc/389-ds/ldap.inf
+
+#    - name: Run installation script setup-ds-admin.pl
+   - name: Run installation script setup-ds
+     shell: /usr/sbin/setup-ds --silent --file /etc/389-ds/ldap.inf

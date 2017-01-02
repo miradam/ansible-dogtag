@@ -1,0 +1,29 @@
+[General]
+
+FullMachineName= {{ ansible_fqdn }}
+SuiteSpotUserID= dirsrv
+SuiteSpotGroup= dirsrv
+AdminDomain= {{ admin_domain }}
+ConfigDirectoryAdminID= admin
+ConfigDirectoryAdminPwd= {{ dm_password }}
+ConfigDirectoryLdapURL= ldap://{{ ansible_nodename }}:{{ds_ldap_port}}/o=NetscapeRoot
+
+[slapd]
+
+SlapdConfigForMC= Yes
+UseExistingMC= 0
+ServerPort= {{ds_ldap_port}}
+ServerIdentifier= {{ serverid }}
+Suffix= {{ suffix }}
+RootDN=cn=Directory Manager
+RootDNPwd={{ dm_password }}
+#ds_bename=exampleDB
+AddSampleEntries= No
+
+[admin]
+
+Port= 9830
+ServerIpAddress= 0.0.0.0
+ServerAdminID= admin
+ServerAdminPwd= {{ dm_password }}
+

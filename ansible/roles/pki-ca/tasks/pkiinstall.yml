@@ -3,11 +3,11 @@
   tags:
     - pki
     - package-install
-    - network
   package: name={{ item }} state=present
   with_items:
+    - pki-ca
     - pki-server
     - dogtag-pki-server-theme
     - openssl
-  when: package_install
+  # when: package_install
 

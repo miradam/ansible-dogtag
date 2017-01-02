@@ -19,5 +19,5 @@
   args:
     creates: /etc/pki/{{pki_instance_name}}/kra/CS.cfg
 
-- include: ../../pki/tasks/limitmemory.yml
-- include: ../../pki/tasks/fetchadmincert.yml
+# - include: ../../pki/tasks/limitmemory.yml
+# - include: ../../pki/tasks/fetchadmincert.yml
